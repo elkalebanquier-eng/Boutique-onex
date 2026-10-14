@@ -12,6 +12,7 @@ import {
   Factory,
   Globe2,
   Heart,
+  Home as HomeIcon,
   LayoutGrid,
   MapPin,
   Menu,
@@ -221,6 +222,8 @@ export default function Home() {
   const [cartOpen, setCartOpen] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("home");
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -263,6 +266,15 @@ export default function Home() {
 
   const scrollToCatalog = () => document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" });
 
+  const goToTab = (tab: string) => {
+    setActiveTab(tab);
+    setMobileMenuOpen(false);
+    if (tab === "home") window.scrollTo({ top: 0, behavior: "smooth" });
+    if (tab === "shop") window.setTimeout(scrollToCatalog, 30);
+    if (tab === "cart") setCartOpen(true);
+    if (tab === "profile") setProfileOpen(true);
+  };
+
   return (
     <div className="site-shell" id="top">
       <div className="announcement"><div className="page-width announcement-inner"><span><Zap size={14} fill="currentColor" /> Le commerce africain, à portée mondiale.</span><span className="announcement-links"><span>FR <ChevronDown size={13} /></span><span>EUR <ChevronDown size={13} /></span><a href="#sellers">Vendre sur Onex <ArrowUpRight size={13} /></a></span></div></div>
@@ -270,19 +282,20 @@ export default function Home() {
       <header className="site-header">
         <div className="page-width header-inner">
           <Logo />
+          <nav className="app-nav" aria-label="Navigation principale">
+            <button className={activeTab === "home" ? "active" : ""} onClick={() => goToTab("home")}><HomeIcon size={16} /><span>Accueil</span></button>
+            <button className={activeTab === "shop" ? "active" : ""} onClick={() => goToTab("shop")}><LayoutGrid size={16} /><span>Boutique</span></button>
+            <button className={activeTab === "cart" ? "active" : ""} onClick={() => goToTab("cart")}><ShoppingBag size={16} /><span>Panier</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
+            <button className={activeTab === "profile" ? "active" : ""} onClick={() => goToTab("profile")}><UserRound size={16} /><span>Profil</span></button>
+          </nav>
           <div className="header-search">
             <Search size={19} />
-            <input value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => event.key === "Enter" && scrollToCatalog()} placeholder="Rechercher un produit, une marque..." aria-label="Rechercher dans le catalogue" />
-            <button onClick={scrollToCatalog}>Rechercher</button>
+            <input value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => event.key === "Enter" && goToTab("shop")} placeholder="Rechercher un produit, une marque..." aria-label="Rechercher dans le catalogue" />
+            <button onClick={() => goToTab("shop")}>Rechercher</button>
           </div>
-          <nav className={`header-nav ${mobileMenuOpen ? "is-open" : ""}`}>
-            <a href="#catalogue" onClick={() => setMobileMenuOpen(false)}>Découvrir</a>
-            <a href="#sellers" onClick={() => setMobileMenuOpen(false)}>Fournisseurs</a>
-            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>Comment ça marche</a>
-          </nav>
           <div className="header-actions">
-            <button className="icon-action" aria-label="Mon compte"><UserRound size={20} /><span>Compte</span></button>
-            <button className="cart-action" onClick={() => setCartOpen(true)} aria-label="Ouvrir le panier"><ShoppingBag size={20} /><span>Panier</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
+            <button className="icon-action" onClick={() => goToTab("profile")} aria-label="Ouvrir mon profil"><UserRound size={20} /><span>Profil</span></button>
+            <button className="cart-action" onClick={() => goToTab("cart")} aria-label="Ouvrir le panier"><ShoppingBag size={20} /><span>Panier</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
             <button className="mobile-menu-button" onClick={() => setMobileMenuOpen(current => !current)} aria-label="Ouvrir le menu"><Menu size={22} /></button>
           </div>
         </div>
@@ -325,6 +338,15 @@ export default function Home() {
       </main>
 
       <footer className="site-footer"><div className="page-width footer-top"><div><Logo /><p>Un monde de possibilités,<br />une commande à la fois.</p></div><div className="footer-links"><div><strong>Boutique Onex</strong><a href="#catalogue">À propos</a><a href="#sellers">Nos fournisseurs</a><a href="#how-it-works">Comment ça marche</a></div><div><strong>Pour les acheteurs</strong><a href="#catalogue">Explorer le catalogue</a><a href="#catalogue">Demander un devis</a><a href="#top">Centre d’aide</a></div><div><strong>Pour les vendeurs</strong><a href="#sellers">Vendre sur Onex</a><a href="#sellers">Ressources</a><a href="#sellers">Nous contacter</a></div></div></div><div className="page-width footer-bottom"><span>© 2026 Boutique Onex. Fait avec intention.</span><span>Confidentialité &nbsp;·&nbsp; Conditions &nbsp;·&nbsp; Cookies</span></div></footer>
+
+      <nav className="mobile-app-nav" aria-label="Navigation mobile">
+        <button className={activeTab === "home" ? "active" : ""} onClick={() => goToTab("home")}><HomeIcon size={19} /><span>Accueil</span></button>
+        <button className={activeTab === "shop" ? "active" : ""} onClick={() => goToTab("shop")}><LayoutGrid size={19} /><span>Boutique</span></button>
+        <button className={activeTab === "cart" ? "active" : ""} onClick={() => goToTab("cart")}><ShoppingBag size={19} /><span>Panier</span>{cartCount > 0 && <b>{cartCount}</b>}</button>
+        <button className={activeTab === "profile" ? "active" : ""} onClick={() => goToTab("profile")}><UserRound size={19} /><span>Profil</span></button>
+      </nav>
+
+      {profileOpen && <div className="profile-overlay" onClick={() => setProfileOpen(false)}><aside className="profile-panel" onClick={event => event.stopPropagation()}><div className="profile-panel-head"><div><span className="eyebrow muted">Espace acheteur</span><h2>Votre profil</h2></div><button className="close-button" onClick={() => setProfileOpen(false)} aria-label="Fermer le profil"><X size={20} /></button></div><div className="profile-identity"><div className="profile-avatar">KA</div><div><strong>Kadiatou A.</strong><span>Acheteuse professionnelle</span><small><BadgeCheck size={13} /> Profil vérifié</small></div></div><div className="profile-stats"><div><strong>{cartCount}</strong><span>Articles au panier</span></div><div><strong>{favorites.length}</strong><span>Favoris</span></div><div><strong>03</strong><span>Commandes</span></div></div><div className="profile-menu"><button><PackageCheck size={17} /><span>Mes commandes<small>Suivre vos achats et livraisons</small></span><ChevronRight size={16} /></button><button><Heart size={17} /><span>Mes favoris<small>Vos sélections enregistrées</small></span><ChevronRight size={16} /></button><button><Globe2 size={17} /><span>Adresse de livraison<small>France · Dakar · Abidjan</small></span><ChevronRight size={16} /></button><button><CircleHelp size={17} /><span>Besoin d’aide ?<small>Parler à un expert Onex</small></span><ChevronRight size={16} /></button></div><button className="seller-profile-cta" onClick={() => { setProfileOpen(false); document.getElementById("sellers")?.scrollIntoView({ behavior: "smooth" }); }}><Sparkles size={16} /><span><strong>Devenir fournisseur</strong><small>Présentez vos produits au monde</small></span><ArrowUpRight size={16} /></button></aside></div>}
 
       {cartOpen && <div className="cart-overlay" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={event => event.stopPropagation()}><div className="cart-header"><div><span className="eyebrow muted">Votre sélection</span><h2>Panier <span>({cartCount})</span></h2></div><button className="close-button" onClick={() => setCartOpen(false)} aria-label="Fermer le panier"><X size={20} /></button></div>{cart.length ? <><div className="cart-items">{cart.map(item => <div className="cart-item" key={item.id}><div className="cart-thumb" style={{ backgroundImage: `url(${item.image})` }} /><div className="cart-item-info"><strong>{item.name}</strong><span>{item.supplier}</span><b>{formatPrice(item.price)}</b><div className="quantity-control"><button onClick={() => updateQuantity(item.id, -1)}><Minus size={13} /></button><span>{item.quantity}</span><button onClick={() => updateQuantity(item.id, 1)}><Plus size={13} /></button></div></div><button className="remove-item" onClick={() => updateQuantity(item.id, -item.quantity)}><X size={14} /></button></div>)}</div><div className="cart-summary"><div><span>Sous-total indicatif</span><strong>{formatPrice(cartTotal)}</strong></div><p><ShieldCheck size={15} /> Les frais de livraison seront calculés selon la destination.</p><button className="primary-button full-width" onClick={() => toast.info("Votre demande de commande est prête", { description: "La finalisation du checkout arrive dans la prochaine étape." })}>Passer à la commande <ArrowRight size={17} /></button><button className="quote-button" onClick={() => toast.success("Demande de devis envoyée", { description: "Un expert Onex reviendra vers vous rapidement." })}><Send size={16} /> Demander un devis groupé</button></div></> : <div className="empty-cart"><ShoppingBag size={35} /><h3>Votre panier est vide</h3><p>Ajoutez des produits pour commencer votre sélection B2B.</p><button className="primary-button" onClick={() => { setCartOpen(false); scrollToCatalog(); }}>Explorer le catalogue</button></div>}</aside></div>}
     </div>

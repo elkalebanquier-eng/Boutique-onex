@@ -19,3 +19,9 @@
 - Le panier permet de gérer les articles et les quantités avant commande.
 - Les actions principales d’achat et de demande de devis sont visibles et adaptées à un acheteur africain ou international.
 - Les interactions de la première version restent fonctionnelles côté interface sans nécessiter encore de paiement réel.
+
+## Shell d’application et navigation
+- L’application expose une navigation persistante avec les entrées **Accueil**, **Boutique**, **Panier** et **Profil**.
+- La navigation est visible sur desktop dans la barre principale et sur mobile dans une barre basse adaptée aux usages tactiles.
+- L’onglet Boutique amène directement au catalogue, l’onglet Panier ouvre la sélection courante et l’onglet Profil ouvre un espace acheteur dédié.
+- Le profil affiche identité, statut vérifié, statistiques de panier/favoris/commandes, commandes, favoris, adresse de livraison et accès fournisseur.
